@@ -1,0 +1,21 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+    {
+        "name": "CPO debug",
+        "type": "go",
+        "request": "launch",
+        "mode": "debug",
+        "cwd": "${workspaceFolder}",
+        "program": "${workspaceFolder}/control-plane-operator",
+        "args": [
+            "run",
+            "--namespace=${env:MY_NAMESPACE}",
+            "--deployment-name=control-plane-operator",
+            "--metrics-addr=0.0.0.0:8080",
+            "--enable-ci-debug-output=false",
+            "--registry-overrides=quay.io/openshift-release-dev/ocp-v4.0-art-dev=registry.ng.bluemix.net/armada-master/ocp-release"
+        ]
+    }
+    ]
+}

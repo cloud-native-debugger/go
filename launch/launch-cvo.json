@@ -1,0 +1,25 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+    {
+        "name": "CVO debug",
+        "type": "go",
+        "request": "launch",
+        "mode": "debug",
+        "cwd": "${workspaceFolder}",
+        "program": "${workspaceFolder}/cmd",
+        "args": [
+            "start",
+            "--release-image=quay.io/openshift-release-dev/ocp-release@sha256:562c214e9662e3684ac5b8c3d5d2759a83f544da8897a00ebe91a02fcad6d2d9",
+            "--enable-auto-update=false",
+            "--listen=0.0.0.0:9099",
+            "--serving-cert-file=/etc/tls/serving-cert/tls.crt",
+            "--serving-key-file=/etc/tls/serving-cert/tls.key",
+            "--v=2"
+        ],
+        "env": {
+            "MY_ENV_VAR": "test"
+        }
+    }
+    ]
+}

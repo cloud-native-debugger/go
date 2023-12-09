@@ -1,0 +1,20 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+    {
+        "name": "CNO debug",
+        "type": "go",
+        "request": "launch",
+        "mode": "debug",
+        "cwd": "${workspaceFolder}",
+        "program": "${workspaceFolder}/cmd/cluster-network-operator",
+        "args": [
+            "start",
+            "--listen=0.0.0.0:9104"
+        ],
+        "env": {
+            "MY_ENV_VAR": "test"
+        }
+    }
+    ]
+}

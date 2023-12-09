@@ -1,0 +1,19 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+    {
+        "name": "NTO debug",
+        "type": "go",
+        "request": "launch",
+        "mode": "debug",
+        "cwd": "/usr/bin/",
+        "program": "${workspaceFolder}/cmd/cluster-node-tuning-operator",
+        "args": [
+            "-v=0"
+        ],
+        "env": {
+            "MY_ENV_VAR": "test"
+        }
+    }
+    ]
+}

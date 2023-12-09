@@ -1,0 +1,49 @@
+ARG FROM_IMAGE
+
+FROM golang:1.19 as builder
+WORKDIR /entrypoint
+COPY ./entrypoint .
+RUN go build -o "dev-entrypoint" .
+
+FROM $FROM_IMAGE
+
+RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
+    && apt-get -y install --no-install-recommends git nano make wget unzip curl mc \
+    openssh-server build-essential
+RUN apt-get install --reinstall ca-certificates -y
+
+# install oc & kubectl
+RUN cd ~/
+RUN wget https://mirror.openshift.com/pub/openshift-v4/clients/ocp/stable/openshift-client-linux.tar.gz
+RUN tar xvzf openshift-client-linux.tar.gz
+RUN mv oc /usr/local/bin && mv kubectl /usr/local/bin
+
+ARG GO_VERSION
+RUN mkdir /root/go && cd /root/go
+RUN if [ -z "$GO_VERSION" ]; then GoVersion=`curl -s https://go.dev/dl/?mode=json | jq -r '.[0].version'`; else GoVersion=go$GO_VERSION; fi && \
+    wget https://go.dev/dl/$GoVersion.linux-amd64.tar.gz && \
+    tar -C /usr/local -xzf $GoVersion.linux-amd64.tar.gz && \
+    rm $GoVersion.linux-amd64.tar.gz
+
+# RUN sed -i -e '$aexport PATH=$PATH:/usr/local/go/bin' /root/.bashrc
+RUN echo "export PATH=$PATH:/usr/local/go/bin" >> /root/.profile
+RUN echo "export GOPATH=/root/go" >> /root/.profile
+RUN echo "alias mc='. /usr/lib/mc/mc-wrapper.sh'" >> /root/.bash_aliases
+
+RUN export GOPATH=/root/go && /usr/local/go/bin/go install -v github.com/go-delve/delve/cmd/dlv@latest
+RUN export GOPATH=/root/go && /usr/local/go/bin/go install -v golang.org/x/tools/gopls@latest
+
+RUN mkdir /projects
+
+COPY --from=builder /entrypoint/dev-entrypoint /
+
+RUN mkdir /root/.ssh
+COPY ./ssh-config /root/.ssh/config
+ARG AUTHORIZED_KEYS
+RUN echo "$AUTHORIZED_KEYS" > /root/.ssh/authorized_keys
+
+RUN mkdir /var/run/sshd
+RUN /usr/bin/ssh-keygen -A
+RUN sed -i "s|#PermitRootLogin prohibit-password|PermitRootLogin without-password|g" /etc/ssh/sshd_config
+
+CMD ["/usr/sbin/sshd", "-D", "-e", "-p", "2222"]

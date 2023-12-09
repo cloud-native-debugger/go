@@ -1,0 +1,20 @@
+# registry for uploading development images, quay.io is recommended
+export GLOBAL_REGISTRY_URL=quay.io # docker.io
+# repository name inside the registry
+export GLOBAL_REGISTRY_LIBRARY=michael_topchiev # mtopchiev
+# development image name
+export GLOBAL_DEBUGGER_IMAGE=dev
+
+# remote host connection parameters will be stored in this file
+export GLOBAL_SSH_CONFIG=/mnt/c/Users/Michael/.ssh/config
+
+# docker or podman can be used
+export GLOBAL_DOCKER=docker
+
+export GLOBAL_GIT_USER_EMAIL="michael.topchiev@ibm.com"
+export GLOBAL_GIT_USER_NAME="Michael Topchiev"
+export GLOBAL_GIT_EDITOR=nano
+
+export COLOR=$'\033[1;36m'
+export YELLOW=$'\e[1;33m'
+export NC=$'\033[0m' # No Color
