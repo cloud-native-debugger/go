@@ -30,4 +30,5 @@
 
 ## Notes
 - By default debug-start uses one of the cluster node IP address to connect to the debugger. To use different IP address, ex. public IP address of a cluster node, specify the address as the 3rd parameter `debug-start ho hypershift 150.239.24.229`
+- If worker nodes are not easily accessible, use port-forwarding instead of node-port service `debug-start ho hypershift localhost`
 - The debugger image will not be built if it is already available in the image registry. To force re-building and re-uploading the image `debug-start ho hypershift -f`
