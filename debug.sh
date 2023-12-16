@@ -35,6 +35,11 @@ debug() {
   fi
   echo "source image: $SOURCE_IMAGE"
 
+  if [ "$DEV_SOURCE_IMAGE_OVERRIDE" != "" ]; then
+    echo "Source image overridden with $DEV_SOURCE_IMAGE_OVERRIDE"
+    SOURCE_IMAGE=$DEV_SOURCE_IMAGE_OVERRIDE
+  fi
+
   # digest of the image will be used as a tag for the debugger image
   printf "${COLOR}pulling the source image from the registry...${NC}\n"
   $GLOBAL_DOCKER pull $SOURCE_IMAGE
@@ -106,13 +111,19 @@ EOF
   )"
 
   printf "${COLOR}exposing the debugger pod with a kubernetes node-port service...${NC}\n"
-  kubectl delete svc dev-$DEPLOYMENT-svc -n $NAMESPACE --ignore-not-found=true
-  kubectl expose deployment $DEPLOYMENT --name=dev-$DEPLOYMENT-svc --type=NodePort --port=2222 --target-port=2222 -n $NAMESPACE
-  kubectl patch svc dev-$DEPLOYMENT-svc -p "{\"spec\":{\"ports\":[{\"port\":2222,\"targetPort\":2222,\"nodePort\":$PORT}]}}" -n $NAMESPACE
+  local -r SVC_NAME="dev-${DEPLOYMENT:0:55}-svc"
+  kubectl delete svc "$SVC_NAME" -n $NAMESPACE --ignore-not-found=true
+  kubectl expose deployment $DEPLOYMENT --name="$SVC_NAME" --type=NodePort --port=2222 --target-port=2222 -n $NAMESPACE
+  kubectl patch svc $SVC_NAME -p "{\"spec\":{\"ports\":[{\"port\":2222,\"targetPort\":2222,\"nodePort\":$PORT}]}}" -n $NAMESPACE
 }
 
 validateWorkerIp() {
   local -n IP=$1 # passed by reference
+
+  if [ "$IP" == "localhost" ]; then
+    echo "'localhost' is specified as the worker node IP address - port-forward will be used"
+    return
+  fi
 
   if [ -z "$IP" ]; then
     echo "worker node IP address is not specified, one of the worker nodes IP will be used"
@@ -144,6 +155,9 @@ function valid_ip() {
   local ip=$1
   local stat=1
 
+  if [ "$1" == "localhost" ]; then
+    return 0
+  fi
   if [[ $ip =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
     OIFS=$IFS
     IFS='.'

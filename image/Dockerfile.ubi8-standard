@@ -30,8 +30,6 @@ RUN echo "export GOPATH=/root/go" >> /root/.bash_profile
 RUN export GOPATH=/root/go && /usr/local/go/bin/go install -v github.com/go-delve/delve/cmd/dlv@latest
 RUN export GOPATH=/root/go && /usr/local/go/bin/go install -v golang.org/x/tools/gopls@latest
 
-RUN mkdir /projects
-
 COPY --from=builder /entrypoint/dev-entrypoint /
 
 RUN mkdir /root/.ssh

@@ -31,7 +31,7 @@ fi
 
 kubectl replace -f <(oc get configmap/backup-$DEV_DEPLOYMENT -n $PARAM_NAMESPACE -o "jsonpath={ .data.$DEV_DEPLOYMENT}" | sed '/^  uid:/d' | sed '/^  resourceVersion:/d')
 
-kubectl delete svc dev-$DEV_DEPLOYMENT-svc -n $PARAM_NAMESPACE --ignore-not-found=true
+kubectl delete svc "dev-${DEV_DEPLOYMENT:0:55}-svc" -n $PARAM_NAMESPACE --ignore-not-found=true
 kubectl delete cm backup-$DEV_DEPLOYMENT -n $PARAM_NAMESPACE
 
 # check if scc removal is needed

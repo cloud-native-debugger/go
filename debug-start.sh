@@ -81,6 +81,13 @@ debug $DEV_DEPLOYMENT $DEV_CONTAINER $PARAM_NAMESPACE $DEV_PORT $DEV_IMAGE_TYPE 
 
 sleep 10 # give the pods time to start
 
+if [ "$PARAM_IP" == "localhost" ]; then
+  echo "start port-forward in a separate terminal window:"
+  echo "oc port-forward service/dev-${DEV_DEPLOYMENT:0:55}-svc $DEV_PORT:2222 -n $PARAM_NAMESPACE"
+  echo "{ while true ; do nc -vz 127.0.0.1 $DEV_PORT || exit ; sleep 60 ; done } 1>/dev/null 2>&1 &"
+  read -p "Press any key to continue ..."
+fi
+
 printf "${COLOR}verifying the debugger has started and is accepting connections...${NC}\n"
 ssh-keygen -f "$HOME/.ssh/known_hosts" -R "[$PARAM_IP]:$DEV_PORT" >/dev/null 2>&1
 if [[ $(grep WSL2 /proc/version) ]]; then
@@ -91,16 +98,18 @@ withRetry "ssh-keyscan -4 -p $DEV_PORT -H $PARAM_IP | grep "ecdsa-sha2-nistp256"
 #withRetry "ssh -p $DEV_PORT -o ConnectTimeout=5 root@$PARAM_IP true"
 
 printf "${COLOR}cloning source code fork into the debugger...${NC}\n"
-ssh -t -p $DEV_PORT root@$PARAM_IP "cd /projects && git clone $DEV_FORK $DEV_DIR && mkdir -p $DEV_DIR/.vscode"
-ssh -t -p $DEV_PORT root@$PARAM_IP "cd /projects/$DEV_DIR && git remote add upstream $DEV_UPSTREAM && git fetch upstream"
-scp -P $DEV_PORT $BASEDIR/launch/launch-$PARAM_APP.json root@$PARAM_IP:/projects/$DEV_DIR/.vscode/launch.json
+ssh -t -p $DEV_PORT root@$PARAM_IP "mkdir -p $DEV_DIR"
+ssh -t -p $DEV_PORT root@$PARAM_IP "git clone $DEV_FORK $DEV_DIR && mkdir -p $DEV_DIR/.vscode"
+
+[ "$DEV_UPSTREAM" != "" ] && ssh -t -p $DEV_PORT root@$PARAM_IP "cd $DEV_DIR && git remote add upstream $DEV_UPSTREAM && git fetch upstream"
+[ -f "$BASEDIR/launch/launch-$PARAM_APP.json" ] && scp -P $DEV_PORT $BASEDIR/launch/launch-$PARAM_APP.json root@$PARAM_IP:$DEV_DIR/.vscode/launch.json
 
 printf "${COLOR}configuring git inside the debugger...${NC}\n"
 ssh -t -p $DEV_PORT root@$PARAM_IP "git config --global user.email \"$GLOBAL_GIT_USER_EMAIL\" && git config --global user.name \"$GLOBAL_GIT_USER_NAME\""
 ssh -t -p $DEV_PORT root@$PARAM_IP "git config --global core.editor \"$GLOBAL_GIT_EDITOR\""
 
 printf "${COLOR}starting VsCode instance...${NC}\n"
-VS_CODE="code --folder-uri vscode-remote://ssh-remote+dev-cloud-$PARAM_APP/projects/$DEV_DIR"
+VS_CODE="code --folder-uri vscode-remote://ssh-remote+dev-cloud-$PARAM_APP$DEV_DIR"
 eval "$VS_CODE"
 
 echo "debugger successfully started!"

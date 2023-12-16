@@ -8,7 +8,7 @@ export GLOBAL_DEBUGGER_IMAGE=dev
 # remote host connection parameters will be stored in this file
 export GLOBAL_SSH_CONFIG=/mnt/c/Users/Michael/.ssh/config
 
-# docker or podman can be used
+# use docker or podman
 export GLOBAL_DOCKER=docker
 
 export GLOBAL_GIT_USER_EMAIL="michael.topchiev@ibm.com"
