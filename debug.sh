@@ -96,7 +96,8 @@ debug() {
                         "resources": null,
                         "securityContext": {
                             "capabilities": {
-                                "add": ["CAP_AUDIT_WRITE", "CAP_SYS_CHROOT"]
+                                "add": ["CAP_AUDIT_WRITE", "CAP_SYS_CHROOT"],
+                                "drop": null
                             },
                            "runAsUser": 0,
                            "runAsNonRoot": false

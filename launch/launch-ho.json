@@ -17,7 +17,7 @@
             "--enable-ci-debug-output=false",
             "--private-platform=None",
             "--cert-dir=/var/run/secrets/serving-cert",
-            "--registry-overrides=quay.io/openshift-release-dev/ocp-v4.0-art-dev=registry.ng.bluemix.net/armada-master/ocp-release"
+            "--registry-overrides=quay.io/openshift-release-dev/ocp-v4.0-art-dev=us.icr.io/armada-master/ocp-release"
         ],
         "env": {
             "MY_VAR":"123",
