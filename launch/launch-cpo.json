@@ -14,7 +14,7 @@
             "--deployment-name=control-plane-operator",
             "--metrics-addr=0.0.0.0:8080",
             "--enable-ci-debug-output=false",
-            "--registry-overrides=quay.io/openshift-release-dev/ocp-v4.0-art-dev=registry.ng.bluemix.net/armada-master/ocp-release"
+            "--registry-overrides=quay.io/openshift-release-dev/ocp-v4.0-art-dev=us.icr.io/armada-master/ocp-release"
         ]
     }
     ]

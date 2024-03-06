@@ -5,6 +5,7 @@
 # usage: ./debug-start.sh app namespace [worker-ip] [-f]
 
 set -e
+set -o pipefail
 
 BASEDIR="$(dirname "$(test -L "$0" && readlink "$0" || echo "$0")")"
 

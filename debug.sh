@@ -100,7 +100,8 @@ debug() {
                                 "drop": null
                             },
                            "runAsUser": 0,
-                           "runAsNonRoot": false
+                           "runAsNonRoot": false,
+                           "readOnlyRootFilesystem": false
                         }
                     }
                 ]
